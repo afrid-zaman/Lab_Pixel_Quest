@@ -8,11 +8,18 @@ public class PlayerStats : MonoBehaviour
 {
     public Transform respawnPoint;
     private int _coinCounter = 0;
+    private int coinsInLevel = 0;
     private int _health = 3;
+    private int maxHealth = 3;
+    private PlayerUIController playerUIController;
     // Start is called before the first frame update
     void Start()
     {
-        
+        coinsInLevel = GameObject.Find("Coins").transform.childCount;
+        playerUIController = GetComponent<PlayerUIController>();
+        playerUIController.StartUI();
+        playerUIController.UpdateText(_coinCounter + "/" + coinsInLevel);
+        playerUIController.UpdateHeart(_health,maxHealth);
     }
 
     // Update is called once per frame
@@ -26,8 +33,9 @@ public class PlayerStats : MonoBehaviour
         switch (collision.tag)
         {
             case "Death":
-                {
+                { 
                     _health--;
+                    playerUIController.UpdateHeart(_health, maxHealth);
                     if (_health <= 0)
                     {
                         string thislvl = SceneManager.GetActiveScene().name;
@@ -44,6 +52,7 @@ public class PlayerStats : MonoBehaviour
                 {
                     _coinCounter++;
                     Destroy(collision.gameObject);
+                    playerUIController.UpdateText(_coinCounter + "/" + coinsInLevel);
                     break;
                 }
 
@@ -52,6 +61,7 @@ public class PlayerStats : MonoBehaviour
                     if (_health < 3)
                     {
                         _health++;
+                        playerUIController.UpdateHeart(_health, maxHealth);
                         Destroy(collision.gameObject);
                     }
                     break;  
